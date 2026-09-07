@@ -52,7 +52,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBudgetModal }) => {
                 <div className="h-6 w-px bg-sky-200" />
 
                 <div className="flex items-center gap-2.5 pl-1">
-                  {user.photoURL ? (
+                  {user.isGuest ? (
+                    <div className="w-8 h-8 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-800 text-xs font-semibold" title="โหมดทดลองใช้งาน">
+                      <span>⚡</span>
+                    </div>
+                  ) : user.photoURL ? (
                     <img
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
@@ -66,16 +70,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBudgetModal }) => {
                   )}
 
                   <div className="hidden md:block text-left">
-                    <p className="text-xs font-semibold text-slate-800 leading-tight truncate max-w-[150px]">
-                      {user.displayName || user.email?.split('@')[0]}
-                    </p>
-                    <p className="text-[11px] text-slate-500 truncate max-w-[150px]">{user.email}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-semibold text-slate-800 leading-tight truncate max-w-[140px]">
+                        {user.displayName || user.email?.split('@')[0]}
+                      </p>
+                      {user.isGuest && (
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                          Guest
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-slate-500 truncate max-w-[140px]">{user.email}</p>
                   </div>
 
                   <button
                     onClick={logout}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ml-1"
-                    title="ออกจากระบบ"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors ml-1 cursor-pointer"
+                    title={user.isGuest ? 'ออกจากโหมดทดลองใช้' : 'ออกจากระบบ'}
                   >
                     <LogOut className="w-4 h-4" />
                   </button>

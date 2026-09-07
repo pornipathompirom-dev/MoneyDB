@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
 import { Transaction, UserProfile, TransactionType } from '../types';
+import { generateSampleTransactions } from '../utils/demoData';
 
 export interface NewTransactionInput {
   type: TransactionType;
@@ -21,11 +22,67 @@ export interface NewTransactionInput {
   date: string; // YYYY-MM-DD
 }
 
+// Guest Mode Local Storage Helpers
+const GUEST_TX_KEY = 'moneydb_guest_transactions';
+const GUEST_PROFILE_KEY = 'moneydb_guest_profile';
+
+function getGuestStoredTransactions(): Transaction[] {
+  try {
+    const raw = localStorage.getItem(GUEST_TX_KEY);
+    if (!raw) {
+      const nowMonth = new Date().toISOString().substring(0, 7);
+      const samples = generateSampleTransactions(nowMonth);
+      const initialItems: Transaction[] = samples.map((s, idx) => ({
+        id: `guest_tx_${Date.now()}_${idx}`,
+        userId: 'guest_user',
+        type: s.type,
+        amount: s.amount,
+        category: s.category,
+        title: s.title,
+        date: s.date,
+        month: s.date.substring(0, 7),
+        createdAt: new Date().toISOString(),
+      }));
+      localStorage.setItem(GUEST_TX_KEY, JSON.stringify(initialItems));
+      return initialItems;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('Error reading guest transactions:', e);
+    return [];
+  }
+}
+
+function saveGuestStoredTransactions(items: Transaction[]) {
+  try {
+    localStorage.setItem(GUEST_TX_KEY, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent('moneydb_guest_sync'));
+  } catch (e) {
+    console.error('Error saving guest transactions:', e);
+  }
+}
+
 export function subscribeToUserTransactions(
   userId: string,
   onSuccess: (transactions: Transaction[]) => void,
   onError: (error: Error) => void
 ) {
+  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+    const emit = () => {
+      const items = getGuestStoredTransactions();
+      items.sort((a, b) => b.date.localeCompare(a.date));
+      onSuccess([...items]);
+    };
+    emit();
+    const handleSync = () => emit();
+    window.addEventListener('moneydb_guest_sync', handleSync);
+    window.addEventListener('storage', handleSync);
+    return () => {
+      window.removeEventListener('moneydb_guest_sync', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }
+
   const collectionPath = `users/${userId}/transactions`;
   const q = query(collection(db, 'users', userId, 'transactions'), orderBy('date', 'desc'));
 
@@ -61,10 +118,30 @@ export function subscribeToUserTransactions(
 }
 
 export async function createTransaction(userId: string, input: NewTransactionInput): Promise<string> {
-  const collectionPath = `users/${userId}/transactions`;
   const now = new Date().toISOString();
   const month = input.date.substring(0, 7);
 
+  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+    const items = getGuestStoredTransactions();
+    const newId = `guest_tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    const newTx: Transaction = {
+      id: newId,
+      userId,
+      type: input.type,
+      amount: Number(input.amount),
+      category: input.category.trim(),
+      title: input.title.trim(),
+      date: input.date,
+      month,
+      createdAt: now,
+      updatedAt: now,
+    };
+    items.unshift(newTx);
+    saveGuestStoredTransactions(items);
+    return newId;
+  }
+
+  const collectionPath = `users/${userId}/transactions`;
   const payload = {
     userId,
     type: input.type,
@@ -90,9 +167,27 @@ export async function editTransaction(
   transactionId: string,
   input: Partial<NewTransactionInput>
 ): Promise<void> {
-  const docPath = `users/${userId}/transactions/${transactionId}`;
   const now = new Date().toISOString();
 
+  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+    const items = getGuestStoredTransactions();
+    const idx = items.findIndex((t) => t.id === transactionId);
+    if (idx !== -1) {
+      items[idx] = {
+        ...items[idx],
+        ...(input.type !== undefined ? { type: input.type } : {}),
+        ...(input.amount !== undefined ? { amount: Number(input.amount) } : {}),
+        ...(input.category !== undefined ? { category: input.category.trim() } : {}),
+        ...(input.title !== undefined ? { title: input.title.trim() } : {}),
+        ...(input.date !== undefined ? { date: input.date, month: input.date.substring(0, 7) } : {}),
+        updatedAt: now,
+      };
+      saveGuestStoredTransactions(items);
+    }
+    return;
+  }
+
+  const docPath = `users/${userId}/transactions/${transactionId}`;
   const updateData: Record<string, any> = {
     updatedAt: now,
   };
@@ -115,6 +210,12 @@ export async function editTransaction(
 }
 
 export async function removeTransaction(userId: string, transactionId: string): Promise<void> {
+  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+    const items = getGuestStoredTransactions().filter((t) => t.id !== transactionId);
+    saveGuestStoredTransactions(items);
+    return;
+  }
+
   const docPath = `users/${userId}/transactions/${transactionId}`;
   try {
     const docRef = doc(db, 'users', userId, 'transactions', transactionId);
@@ -125,6 +226,22 @@ export async function removeTransaction(userId: string, transactionId: string): 
 }
 
 export async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
+  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+    try {
+      const raw = localStorage.getItem(GUEST_PROFILE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {
+      console.error('Error reading guest profile:', e);
+    }
+    return {
+      userId,
+      email: 'guest@moneydb.local',
+      displayName: 'ผู้ใช้งานทั่วไป (Guest)',
+      monthlyBudget: 15000,
+      currency: 'THB',
+    };
+  }
+
   const docPath = `users/${userId}`;
   try {
     const docSnap = await getDoc(doc(db, 'users', userId));
@@ -138,8 +255,25 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile | nu
 }
 
 export async function saveUserProfile(userId: string, profile: Partial<UserProfile>): Promise<void> {
-  const docPath = `users/${userId}`;
   const now = new Date().toISOString();
+
+  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+    try {
+      const current = await fetchUserProfile(userId) || {
+        userId,
+        email: 'guest@moneydb.local',
+        displayName: 'ผู้ใช้งานทั่วไป (Guest)',
+        monthlyBudget: 15000,
+      };
+      const updated = { ...current, ...profile, userId, updatedAt: now };
+      localStorage.setItem(GUEST_PROFILE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving guest profile:', e);
+    }
+    return;
+  }
+
+  const docPath = `users/${userId}`;
   try {
     const docRef = doc(db, 'users', userId);
     await setDoc(

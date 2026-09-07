@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../firebase-applet-config.json';
 
@@ -85,6 +85,25 @@ export async function loginWithGoogle() {
     return result.user;
   } catch (error: any) {
     console.error('Sign-in error:', error);
+    throw error;
+  }
+}
+
+export async function loginWithGoogleRedirect() {
+  try {
+    await signInWithRedirect(auth, googleProvider);
+  } catch (error: any) {
+    console.error('Redirect sign-in error:', error);
+    throw error;
+  }
+}
+
+export async function checkRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    return result?.user || null;
+  } catch (error: any) {
+    console.error('Check redirect result error:', error);
     throw error;
   }
 }
