@@ -22,19 +22,32 @@ export interface NewTransactionInput {
   date: string; // YYYY-MM-DD
 }
 
-// Guest Mode Local Storage Helpers
-const GUEST_TX_KEY = 'moneydb_guest_transactions';
-const GUEST_PROFILE_KEY = 'moneydb_guest_profile';
+// Multi-Account & Offline Local Storage Helpers
+function getLocalTxKey(userId: string): string {
+  const safeId = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
+  return `moneydb_tx_${safeId}`;
+}
 
-function getGuestStoredTransactions(): Transaction[] {
+function getLocalProfileKey(userId: string): string {
+  const safeId = userId.replace(/[^a-zA-Z0-9_-]/g, '_');
+  return `moneydb_profile_${safeId}`;
+}
+
+function getLocalStoredTransactions(userId: string): Transaction[] {
   try {
-    const raw = localStorage.getItem(GUEST_TX_KEY);
+    const key = getLocalTxKey(userId);
+    const raw = localStorage.getItem(key);
     if (!raw) {
+      // Check legacy guest storage
+      const legacyGuest = localStorage.getItem('moneydb_guest_transactions');
+      if (legacyGuest && (userId === 'guest_user' || userId.startsWith('guest_'))) {
+        return JSON.parse(legacyGuest);
+      }
       const nowMonth = new Date().toISOString().substring(0, 7);
       const samples = generateSampleTransactions(nowMonth);
       const initialItems: Transaction[] = samples.map((s, idx) => ({
-        id: `guest_tx_${Date.now()}_${idx}`,
-        userId: 'guest_user',
+        id: `tx_${Date.now()}_${idx}`,
+        userId,
         type: s.type,
         amount: s.amount,
         category: s.category,
@@ -43,22 +56,23 @@ function getGuestStoredTransactions(): Transaction[] {
         month: s.date.substring(0, 7),
         createdAt: new Date().toISOString(),
       }));
-      localStorage.setItem(GUEST_TX_KEY, JSON.stringify(initialItems));
+      localStorage.setItem(key, JSON.stringify(initialItems));
       return initialItems;
     }
     return JSON.parse(raw);
   } catch (e) {
-    console.error('Error reading guest transactions:', e);
+    console.error('Error reading local transactions:', e);
     return [];
   }
 }
 
-function saveGuestStoredTransactions(items: Transaction[]) {
+function saveLocalStoredTransactions(userId: string, items: Transaction[]) {
   try {
-    localStorage.setItem(GUEST_TX_KEY, JSON.stringify(items));
-    window.dispatchEvent(new CustomEvent('moneydb_guest_sync'));
+    const key = getLocalTxKey(userId);
+    localStorage.setItem(key, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent('moneydb_local_sync', { detail: { userId } }));
   } catch (e) {
-    console.error('Error saving guest transactions:', e);
+    console.error('Error saving local transactions:', e);
   }
 }
 
@@ -67,19 +81,25 @@ export function subscribeToUserTransactions(
   onSuccess: (transactions: Transaction[]) => void,
   onError: (error: Error) => void
 ) {
-  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+  const isLocalUser = userId === 'guest_user' || userId.startsWith('guest_') || userId.startsWith('user_') || userId.startsWith('local_');
+
+  if (isLocalUser) {
     const emit = () => {
-      const items = getGuestStoredTransactions();
+      const items = getLocalStoredTransactions(userId);
       items.sort((a, b) => b.date.localeCompare(a.date));
       onSuccess([...items]);
     };
     emit();
-    const handleSync = () => emit();
-    window.addEventListener('moneydb_guest_sync', handleSync);
-    window.addEventListener('storage', handleSync);
+    const handleSync = (e: any) => {
+      if (!e?.detail?.userId || e.detail.userId === userId) {
+        emit();
+      }
+    };
+    window.addEventListener('moneydb_local_sync', handleSync);
+    window.addEventListener('storage', emit);
     return () => {
-      window.removeEventListener('moneydb_guest_sync', handleSync);
-      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('moneydb_local_sync', handleSync);
+      window.removeEventListener('storage', emit);
     };
   }
 
@@ -108,6 +128,10 @@ export function subscribeToUserTransactions(
       onSuccess(items);
     },
     (error) => {
+      console.warn('Firestore snapshot warning, serving local fallback:', error);
+      const fallback = getLocalStoredTransactions(userId);
+      fallback.sort((a, b) => b.date.localeCompare(a.date));
+      onSuccess([...fallback]);
       try {
         handleFirestoreError(error, OperationType.LIST, collectionPath);
       } catch (wrappedError) {
@@ -120,10 +144,11 @@ export function subscribeToUserTransactions(
 export async function createTransaction(userId: string, input: NewTransactionInput): Promise<string> {
   const now = new Date().toISOString();
   const month = input.date.substring(0, 7);
+  const isLocalUser = userId === 'guest_user' || userId.startsWith('guest_') || userId.startsWith('user_') || userId.startsWith('local_');
 
-  if (userId === 'guest_user' || userId.startsWith('guest_')) {
-    const items = getGuestStoredTransactions();
-    const newId = `guest_tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  if (isLocalUser) {
+    const items = getLocalStoredTransactions(userId);
+    const newId = `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const newTx: Transaction = {
       id: newId,
       userId,
@@ -137,7 +162,7 @@ export async function createTransaction(userId: string, input: NewTransactionInp
       updatedAt: now,
     };
     items.unshift(newTx);
-    saveGuestStoredTransactions(items);
+    saveLocalStoredTransactions(userId, items);
     return newId;
   }
 
@@ -158,7 +183,12 @@ export async function createTransaction(userId: string, input: NewTransactionInp
     const docRef = await addDoc(collection(db, 'users', userId, 'transactions'), payload);
     return docRef.id;
   } catch (error) {
-    handleFirestoreError(error, OperationType.CREATE, collectionPath);
+    console.warn('Cloud write failed, saving locally:', error);
+    const items = getLocalStoredTransactions(userId);
+    const newId = `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    items.unshift({ id: newId, ...payload });
+    saveLocalStoredTransactions(userId, items);
+    return newId;
   }
 }
 
@@ -168,9 +198,10 @@ export async function editTransaction(
   input: Partial<NewTransactionInput>
 ): Promise<void> {
   const now = new Date().toISOString();
+  const isLocalUser = userId === 'guest_user' || userId.startsWith('guest_') || userId.startsWith('user_') || userId.startsWith('local_');
 
-  if (userId === 'guest_user' || userId.startsWith('guest_')) {
-    const items = getGuestStoredTransactions();
+  if (isLocalUser) {
+    const items = getLocalStoredTransactions(userId);
     const idx = items.findIndex((t) => t.id === transactionId);
     if (idx !== -1) {
       items[idx] = {
@@ -182,7 +213,7 @@ export async function editTransaction(
         ...(input.date !== undefined ? { date: input.date, month: input.date.substring(0, 7) } : {}),
         updatedAt: now,
       };
-      saveGuestStoredTransactions(items);
+      saveLocalStoredTransactions(userId, items);
     }
     return;
   }
@@ -205,14 +236,22 @@ export async function editTransaction(
     const docRef = doc(db, 'users', userId, 'transactions', transactionId);
     await updateDoc(docRef, updateData);
   } catch (error) {
-    handleFirestoreError(error, OperationType.UPDATE, docPath);
+    console.warn('Cloud update failed, updating locally:', error);
+    const items = getLocalStoredTransactions(userId);
+    const idx = items.findIndex((t) => t.id === transactionId);
+    if (idx !== -1) {
+      items[idx] = { ...items[idx], ...updateData };
+      saveLocalStoredTransactions(userId, items);
+    }
   }
 }
 
 export async function removeTransaction(userId: string, transactionId: string): Promise<void> {
-  if (userId === 'guest_user' || userId.startsWith('guest_')) {
-    const items = getGuestStoredTransactions().filter((t) => t.id !== transactionId);
-    saveGuestStoredTransactions(items);
+  const isLocalUser = userId === 'guest_user' || userId.startsWith('guest_') || userId.startsWith('user_') || userId.startsWith('local_');
+
+  if (isLocalUser) {
+    const items = getLocalStoredTransactions(userId).filter((t) => t.id !== transactionId);
+    saveLocalStoredTransactions(userId, items);
     return;
   }
 
@@ -221,22 +260,26 @@ export async function removeTransaction(userId: string, transactionId: string): 
     const docRef = doc(db, 'users', userId, 'transactions', transactionId);
     await deleteDoc(docRef);
   } catch (error) {
-    handleFirestoreError(error, OperationType.DELETE, docPath);
+    console.warn('Cloud delete failed, removing locally:', error);
+    const items = getLocalStoredTransactions(userId).filter((t) => t.id !== transactionId);
+    saveLocalStoredTransactions(userId, items);
   }
 }
 
 export async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
-  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+  const isLocalUser = userId === 'guest_user' || userId.startsWith('guest_') || userId.startsWith('user_') || userId.startsWith('local_');
+
+  if (isLocalUser) {
     try {
-      const raw = localStorage.getItem(GUEST_PROFILE_KEY);
+      const raw = localStorage.getItem(getLocalProfileKey(userId));
       if (raw) return JSON.parse(raw);
     } catch (e) {
-      console.error('Error reading guest profile:', e);
+      console.error('Error reading local profile:', e);
     }
     return {
       userId,
-      email: 'guest@moneydb.local',
-      displayName: 'ผู้ใช้งานทั่วไป (Guest)',
+      email: 'user@moneydb.local',
+      displayName: 'ผู้ใช้งาน',
       monthlyBudget: 15000,
       currency: 'THB',
     };
@@ -250,25 +293,33 @@ export async function fetchUserProfile(userId: string): Promise<UserProfile | nu
     }
     return null;
   } catch (error) {
-    handleFirestoreError(error, OperationType.GET, docPath);
+    console.warn('Cloud profile fetch error, returning fallback:', error);
+    return {
+      userId,
+      email: 'user@moneydb.local',
+      displayName: 'ผู้ใช้งาน',
+      monthlyBudget: 15000,
+      currency: 'THB',
+    };
   }
 }
 
 export async function saveUserProfile(userId: string, profile: Partial<UserProfile>): Promise<void> {
   const now = new Date().toISOString();
+  const isLocalUser = userId === 'guest_user' || userId.startsWith('guest_') || userId.startsWith('user_') || userId.startsWith('local_');
 
-  if (userId === 'guest_user' || userId.startsWith('guest_')) {
+  if (isLocalUser) {
     try {
       const current = await fetchUserProfile(userId) || {
         userId,
-        email: 'guest@moneydb.local',
-        displayName: 'ผู้ใช้งานทั่วไป (Guest)',
+        email: 'user@moneydb.local',
+        displayName: 'ผู้ใช้งาน',
         monthlyBudget: 15000,
       };
       const updated = { ...current, ...profile, userId, updatedAt: now };
-      localStorage.setItem(GUEST_PROFILE_KEY, JSON.stringify(updated));
+      localStorage.setItem(getLocalProfileKey(userId), JSON.stringify(updated));
     } catch (e) {
-      console.error('Error saving guest profile:', e);
+      console.error('Error saving local profile:', e);
     }
     return;
   }
@@ -286,6 +337,12 @@ export async function saveUserProfile(userId: string, profile: Partial<UserProfi
       { merge: true }
     );
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, docPath);
+    console.warn('Cloud profile save failed, saving locally:', error);
+    try {
+      const updated = { ...profile, userId, updatedAt: now };
+      localStorage.setItem(getLocalProfileKey(userId), JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving local profile fallback:', e);
+    }
   }
 }
