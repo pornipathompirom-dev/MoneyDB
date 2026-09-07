@@ -66,12 +66,12 @@ export const EXPENSE_CATEGORIES: CategoryOption[] = [
 ];
 
 export const INCOME_CATEGORIES: CategoryOption[] = [
-  { id: 'salary', name: 'เงินเดือน / ค่าจ้าง', type: 'income', iconName: 'Briefcase', color: '#10B981', bgColor: '#D1FAE5' },
-  { id: 'business', name: 'ธุรกิจส่วนตัว / ค้าขาย', type: 'income', iconName: 'Store', color: '#059669', bgColor: '#A7F3D0' },
-  { id: 'bonus', name: 'โบนัส / ค่าคอมมิชชั่น', type: 'income', iconName: 'Award', color: '#14B8A6', bgColor: '#CCFBF1' },
-  { id: 'investment', name: 'เงินปันผล / ดอกเบี้ย', type: 'income', iconName: 'TrendingUp', color: '#0EA5E9', bgColor: '#E0F2FE' },
+  { id: 'salary', name: 'เงินเดือน / ค่าจ้าง', type: 'income', iconName: 'Briefcase', color: '#0284C7', bgColor: '#E0F2FE' },
+  { id: 'business', name: 'ธุรกิจส่วนตัว / ค้าขาย', type: 'income', iconName: 'Store', color: '#2563EB', bgColor: '#DBEAFE' },
+  { id: 'bonus', name: 'โบนัส / ค่าคอมมิชชั่น', type: 'income', iconName: 'Award', color: '#0EA5E9', bgColor: '#BAE6FD' },
+  { id: 'investment', name: 'เงินปันผล / ดอกเบี้ย', type: 'income', iconName: 'TrendingUp', color: '#38BDF8', bgColor: '#E0F2FE' },
   { id: 'gift', name: 'ของขวัญ / ได้รับมา', type: 'income', iconName: 'Gift', color: '#6366F1', bgColor: '#E0E7FF' },
-  { id: 'other_income', name: 'รายรับอื่นๆ', type: 'income', iconName: 'PlusCircle', color: '#84CC16', bgColor: '#ECFCCB' },
+  { id: 'other_income', name: 'รายรับอื่นๆ', type: 'income', iconName: 'PlusCircle', color: '#0369A1', bgColor: '#E0F2FE' },
 ];
 
 export const ALL_CATEGORIES = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];

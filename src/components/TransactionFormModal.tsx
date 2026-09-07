@@ -130,13 +130,13 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 overflow-hidden">
+      <div className="relative bg-sky-50 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sky-200 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-4 border-b border-sky-200/70">
           <div className="flex items-center gap-2.5">
             <div
               className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                type === 'expense' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'
+                type === 'expense' ? 'bg-rose-50 text-rose-600' : 'bg-sky-100 text-sky-700'
               }`}
             >
               {type === 'expense' ? <ArrowDownRight className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
@@ -152,7 +152,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-sky-100 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -168,7 +168,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Type Toggle */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-sky-100/70 rounded-xl">
             <button
               type="button"
               onClick={() => handleTypeChange('expense')}
@@ -186,8 +186,8 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
               onClick={() => handleTypeChange('income')}
               className={`py-2 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all ${
                 type === 'income'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-sky-600 text-white shadow-xs'
+                  : 'text-sky-800 hover:text-sky-950'
               }`}
             >
               <ArrowUpRight className="w-4 h-4" />
@@ -201,7 +201,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
               จำนวนเงิน (บาท) *
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-600/60 font-bold text-base">
                 ฿
               </span>
               <input
@@ -212,7 +212,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold text-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-sky-100/50 border border-sky-200 rounded-xl text-slate-900 font-bold text-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
               />
             </div>
             {/* Quick Amount presets */}
@@ -225,7 +225,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
                     const cur = parseFloat(amount) || 0;
                     setAmount(String(cur + val));
                   }}
-                  className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-medium rounded-lg transition-colors"
+                  className="px-2 py-1 bg-sky-100 hover:bg-sky-200 text-sky-900 text-[11px] font-medium rounded-lg transition-colors border border-sky-200/60"
                 >
                   +{val}
                 </button>
@@ -245,7 +245,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
               placeholder={type === 'expense' ? 'เช่น ข้าวผัดกะเพรา, ค่าน้ำมัน, ช้อปปิ้ง' : 'เช่น เงินเดือน, งานฟรีแลนซ์, ขายของ'}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+              className="w-full px-3.5 py-2.5 bg-sky-100/50 border border-sky-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
             />
           </div>
 
@@ -254,7 +254,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
               หมวดหมู่ *
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1 border border-slate-200 rounded-xl bg-slate-50">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1 border border-sky-200 rounded-xl bg-sky-100/30">
               {categories.map((cat) => {
                 const isSelected = category === cat.name;
                 return (
@@ -264,8 +264,8 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
                     onClick={() => setCategory(cat.name)}
                     className={`p-2 rounded-lg text-left flex flex-col items-center text-center gap-1 transition-all border ${
                       isSelected
-                        ? 'border-emerald-500 bg-emerald-50/80 text-emerald-900 font-medium ring-1 ring-emerald-500'
-                        : 'border-transparent bg-white hover:bg-slate-100 text-slate-700'
+                        ? 'border-sky-500 bg-sky-100 text-sky-950 font-medium ring-1 ring-sky-500'
+                        : 'border-transparent bg-white/80 hover:bg-sky-100/60 text-slate-700'
                     }`}
                   >
                     <div
@@ -291,7 +291,7 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all cursor-pointer"
+              className="w-full px-3.5 py-2 bg-sky-100/50 border border-sky-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all cursor-pointer"
             />
           </div>
 
@@ -300,14 +300,14 @@ export const TransactionFormModal: React.FC<TransactionFormModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl text-xs font-semibold transition-colors"
+              className="flex-1 py-2.5 border border-sky-200 text-sky-900 hover:bg-sky-100 rounded-xl text-xs font-semibold transition-colors"
             >
               ยกเลิก
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm disabled:opacity-50"
+              className="flex-1 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-sm disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>

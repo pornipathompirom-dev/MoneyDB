@@ -135,25 +135,25 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
   const hasData = monthTransactions.length > 0;
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+    <div className="bg-sky-50/80 p-5 rounded-2xl border border-sky-200/80 shadow-xs space-y-4">
       {/* Header with View Tabs */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-sky-200/60 pb-4">
         <div>
           <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-emerald-600" />
+            <BarChart3 className="w-5 h-5 text-sky-700" />
             กราฟและบทวิเคราะห์ทางการเงิน
           </h3>
           <p className="text-xs text-slate-500">วิเคราะห์พฤติกรรมการใช้จ่ายและกระแสเงินสด</p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center p-1 bg-slate-100 rounded-xl w-full sm:w-auto">
+        <div className="flex items-center p-1 bg-sky-100/70 rounded-xl w-full sm:w-auto">
           <button
             onClick={() => setActiveTab('category')}
             className={`flex-1 sm:flex-initial px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'category'
-                ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-sky-950 shadow-xs font-semibold'
+                : 'text-sky-800 hover:text-sky-950'
             }`}
           >
             <PieIcon className="w-3.5 h-3.5" />
@@ -163,8 +163,8 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
             onClick={() => setActiveTab('daily')}
             className={`flex-1 sm:flex-initial px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'daily'
-                ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-sky-950 shadow-xs font-semibold'
+                : 'text-sky-800 hover:text-sky-950'
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5" />
@@ -174,8 +174,8 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
             onClick={() => setActiveTab('trend')}
             className={`flex-1 sm:flex-initial px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center justify-center gap-1.5 ${
               activeTab === 'trend'
-                ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                : 'text-slate-600 hover:text-slate-900'
+                ? 'bg-white text-sky-950 shadow-xs font-semibold'
+                : 'text-sky-800 hover:text-sky-950'
             }`}
           >
             <TrendIcon className="w-3.5 h-3.5" />
@@ -189,7 +189,7 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-500 font-medium">เลือกประเภทที่ต้องการวิเคราะห์:</span>
-            <div className="inline-flex rounded-lg bg-slate-100 p-0.5">
+            <div className="inline-flex rounded-lg bg-sky-100/80 p-0.5">
               <button
                 onClick={() => setPieCategoryType('expense')}
                 className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
@@ -204,8 +204,8 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
                 onClick={() => setPieCategoryType('income')}
                 className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
                   pieCategoryType === 'income'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-sky-600 text-white shadow-xs'
+                    : 'text-sky-800 hover:text-sky-950'
                 }`}
               >
                 รายรับ
@@ -313,7 +313,7 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
                   wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }}
                   iconType="circle"
                 />
-                <Bar dataKey="รายรับ" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={16} />
+                <Bar dataKey="รายรับ" fill="#0284C7" radius={[4, 4, 0, 0]} maxBarSize={16} />
                 <Bar dataKey="รายจ่าย" fill="#F43F5E" radius={[4, 4, 0, 0]} maxBarSize={16} />
               </BarChart>
             </ResponsiveContainer>
@@ -355,9 +355,9 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({
                 <Line
                   type="monotone"
                   dataKey="รายรับ"
-                  stroke="#10B981"
+                  stroke="#0284C7"
                   strokeWidth={2.5}
-                  dot={{ r: 4, fill: '#10B981' }}
+                  dot={{ r: 4, fill: '#0284C7' }}
                   activeDot={{ r: 6 }}
                 />
                 <Line

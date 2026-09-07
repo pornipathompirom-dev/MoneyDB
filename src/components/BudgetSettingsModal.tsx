@@ -49,10 +49,10 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      <div className="relative bg-sky-50 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200">
+        <div className="flex items-center justify-between pb-4 border-b border-sky-200/70">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center">
               <Sliders className="w-4 h-4" />
             </div>
             <div>
@@ -62,7 +62,7 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-sky-100 rounded-full transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -80,7 +80,7 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
               งบประมาณรายเดือน (บาท)
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-600/60 font-bold text-base">
                 ฿
               </span>
               <input
@@ -90,7 +90,7 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
                 placeholder="เช่น 15000"
                 value={budgetInput}
                 onChange={(e) => setBudgetInput(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold text-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+                className="w-full pl-9 pr-4 py-2.5 bg-sky-100/50 border border-sky-200 rounded-xl text-slate-900 font-bold text-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all"
               />
             </div>
           </div>
@@ -103,7 +103,7 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
                   key={amt}
                   type="button"
                   onClick={() => setBudgetInput(String(amt))}
-                  className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                  className="px-2.5 py-1 text-xs font-medium rounded-lg bg-sky-100 hover:bg-sky-200 text-sky-900 transition-colors border border-sky-200/60"
                 >
                   {formatCurrency(amt)}
                 </button>
@@ -115,14 +115,14 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-100 rounded-xl text-xs font-semibold transition-colors"
+              className="flex-1 py-2.5 border border-sky-200 text-sky-900 hover:bg-sky-100 rounded-xl text-xs font-semibold transition-colors"
             >
               ยกเลิก
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs disabled:opacity-50"
+              className="flex-1 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shadow-xs disabled:opacity-50"
             >
               {isSaving ? (
                 <>

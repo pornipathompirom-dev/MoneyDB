@@ -16,10 +16,10 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-emerald-50/20 to-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-sky-100/80 via-sky-50 to-blue-50/60 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         {/* Logo Badge */}
-        <div className="mx-auto w-20 h-20 rounded-full bg-white border-2 border-emerald-600/20 shadow-xl shadow-emerald-600/15 flex items-center justify-center p-1 overflow-hidden">
+        <div className="mx-auto w-20 h-20 rounded-full bg-sky-50 border-2 border-sky-400/50 shadow-xl shadow-sky-400/20 flex items-center justify-center p-1 overflow-hidden">
           <img
             src="/college_logo_circle.png"
             alt="วิทยาลัยอาชีวศึกษาแพร่"
@@ -35,18 +35,18 @@ export const LoginScreen: React.FC = () => {
           ระบบจัดการรายรับรายจ่าย พร้อมสรุปผลและกราฟวิเคราะห์รายเดือน
         </p>
 
-        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-800 border border-sky-300">
           <Database className="w-3.5 h-3.5" />
           Firebase Database: moneydb
         </div>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-xl shadow-slate-200/50 rounded-3xl border border-slate-100 space-y-6">
+        <div className="bg-sky-50/90 py-8 px-6 sm:px-10 shadow-xl shadow-sky-200/50 rounded-3xl border border-sky-200/80 space-y-6">
           {/* Key Feature Highlights */}
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-sky-100 text-sky-700 mt-0.5">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div className="text-left">
@@ -56,7 +56,7 @@ export const LoginScreen: React.FC = () => {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-sky-100 text-sky-700 mt-0.5">
                 <PieChart className="w-4 h-4" />
               </div>
               <div className="text-left">
@@ -66,7 +66,7 @@ export const LoginScreen: React.FC = () => {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 mt-0.5">
+              <div className="p-1.5 rounded-lg bg-sky-100 text-sky-700 mt-0.5">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div className="text-left">
@@ -76,7 +76,7 @@ export const LoginScreen: React.FC = () => {
             </div>
           </div>
 
-          <div className="border-t border-slate-100 pt-6">
+          <div className="border-t border-sky-200/60 pt-6">
             {authError && (
               <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs text-left">
                 <p className="font-semibold">ไม่สามารถเข้าสู่ระบบได้</p>
@@ -94,11 +94,11 @@ export const LoginScreen: React.FC = () => {
             <button
               onClick={handleLogin}
               disabled={isLoggingIn}
-              className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-slate-300 rounded-2xl shadow-xs bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all disabled:opacity-60 cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-sky-300 rounded-2xl shadow-xs bg-white text-sm font-semibold text-slate-800 hover:bg-sky-100/70 hover:border-sky-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all disabled:opacity-60 cursor-pointer"
             >
               {isLoggingIn ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
+                  <Loader2 className="w-5 h-5 animate-spin text-sky-600" />
                   <span>กำลังเชื่อมต่อบัญชี Google...</span>
                 </>
               ) : (
@@ -123,7 +123,7 @@ export const LoginScreen: React.FC = () => {
                     />
                   </svg>
                   <span>เข้าสู่ระบบด้วย Gmail (Google)</span>
-                  <ArrowRight className="w-4 h-4 ml-auto text-slate-400" />
+                  <ArrowRight className="w-4 h-4 ml-auto text-sky-700" />
                 </>
               )}
             </button>
@@ -135,7 +135,7 @@ export const LoginScreen: React.FC = () => {
 
         <div className="text-center mt-6">
           <p className="text-xs text-slate-500">
-            ฐานข้อมูล Firebase จัดการภายใต้โปรเจกต์และคอลเลกชัน <span className="font-mono text-emerald-700">MoneyDB</span>
+            ฐานข้อมูล Firebase จัดการภายใต้โปรเจกต์และคอลเลกชัน <span className="font-mono text-sky-700 font-semibold">MoneyDB</span>
           </p>
         </div>
       </div>

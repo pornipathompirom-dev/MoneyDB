@@ -196,8 +196,8 @@ export default function App() {
   // Loading state
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
-        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
+      <div className="min-h-screen bg-sky-50/70 flex flex-col items-center justify-center">
+        <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
         <p className="mt-3 text-xs text-slate-500 font-medium">กำลังเตรียมระบบและตรวจสอบการเชื่อมต่อ...</p>
       </div>
     );
@@ -209,14 +209,14 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
+    <div className="min-h-screen bg-sky-50/60 text-slate-900 pb-16">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-20 right-4 z-50 animate-in fade-in slide-in-from-top-3 duration-300">
           <div
             className={`px-4 py-3 rounded-2xl shadow-lg border text-xs font-semibold flex items-center gap-2 ${
               toastMessage.type === 'success'
-                ? 'bg-emerald-600 text-white border-emerald-500 shadow-emerald-500/20'
+                ? 'bg-sky-600 text-white border-sky-500 shadow-sky-500/20'
                 : 'bg-rose-600 text-white border-rose-500 shadow-rose-500/20'
             }`}
           >
@@ -239,12 +239,12 @@ export default function App() {
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         {/* Top Action Banner */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-6 rounded-3xl shadow-md">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-blue-700 via-sky-600 to-blue-800 text-white p-6 rounded-3xl shadow-md border border-sky-400/30">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
               สวัสดีคุณ {user.displayName || user.email?.split('@')[0]}
             </h1>
-            <p className="text-xs sm:text-sm text-emerald-100 mt-1 max-w-xl">
+            <p className="text-xs sm:text-sm text-sky-100 mt-1 max-w-xl">
               จัดการรายรับรายจ่าย ดูสรุปผล และวิเคราะห์กระแสเงินสดของคุณได้ทันที ข้อมูลถูกจัดเก็บอย่างปลอดภัยบน Firebase MoneyDB
             </p>
           </div>
@@ -267,9 +267,9 @@ export default function App() {
 
             <button
               onClick={handleOpenNewTransaction}
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-white text-emerald-900 hover:bg-emerald-50 text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-sky-50 text-blue-900 hover:bg-sky-100 text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 border border-sky-200"
             >
-              <Plus className="w-4 h-4 text-emerald-700" />
+              <Plus className="w-4 h-4 text-sky-700" />
               <span>บันทึกรายการ</span>
             </button>
           </div>
@@ -309,7 +309,7 @@ export default function App() {
       <div className="fixed bottom-6 right-6 sm:hidden z-20">
         <button
           onClick={handleOpenNewTransaction}
-          className="w-14 h-14 rounded-full bg-emerald-600 text-white shadow-xl flex items-center justify-center active:scale-95 transition-transform"
+          className="w-14 h-14 rounded-full bg-sky-600 hover:bg-sky-700 text-white shadow-xl shadow-sky-600/30 flex items-center justify-center active:scale-95 transition-transform"
           title="เพิ่มรายการใหม่"
         >
           <Plus className="w-7 h-7" />
