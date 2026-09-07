@@ -6,8 +6,10 @@ import firebaseConfig from '../firebase-applet-config.json';
 // Initialize Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with configured databaseId ('moneydb')
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+// Initialize Firestore (support default database or custom database ID)
+export const db = (!firebaseConfig.firestoreDatabaseId || firebaseConfig.firestoreDatabaseId === '(default)')
+  ? getFirestore(app)
+  : getFirestore(app, firebaseConfig.firestoreDatabaseId);
 
 // Initialize Authentication
 export const auth = getAuth(app);

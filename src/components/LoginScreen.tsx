@@ -77,7 +77,7 @@ export const LoginScreen: React.FC = () => {
         <div className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-100/90 text-sky-800 border border-sky-300">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           <Database className="w-3.5 h-3.5 text-sky-700" />
-          <span>Firebase Database: moneydb</span>
+          <span>Firebase Project: moneydb-29197</span>
         </div>
       </div>
 
@@ -156,10 +156,33 @@ export const LoginScreen: React.FC = () => {
                     </button>
                   </div>
                   <ol className="list-decimal pl-4 space-y-1 text-slate-600">
-                    <li>เปิด <a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-sky-700 underline font-semibold inline-flex items-center gap-0.5">Firebase Console <ExternalLink className="w-2.5 h-2.5" /></a></li>
-                    <li>เลือกโปรเจกต์ <strong>mythic-meridian-7pthm</strong></li>
-                    <li>ไปที่เมนู <strong>Build &gt; Authentication &gt; Settings &gt; Authorized domains</strong></li>
-                    <li>กด <strong>Add domain</strong> วางโดเมนข้างต้น แล้วกดบันทึก (Save)</li>
+                    <li>
+                      เปิด{' '}
+                      <a
+                        href="https://console.firebase.google.com/project/moneydb-29197/authentication/settings"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sky-700 underline font-semibold inline-flex items-center gap-0.5"
+                      >
+                        Firebase Console (Authorized domains) <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </li>
+                    <li>โปรเจกต์ของคุณ: <strong>moneydb-29197</strong></li>
+                    <li>
+                      เลื่อนลงมาที่หัวข้อ <strong>Authorized domains</strong> แล้วกด <strong>Add domain</strong>
+                    </li>
+                    <li>วางโดเมน <code className="bg-slate-100 px-1 py-0.5 rounded text-sky-800 font-semibold">{currentHost}</code> แล้วกดบันทึก (Save)</li>
+                    <li>
+                      อย่าลืมเปิดใช้งาน Google Sign-in ที่{' '}
+                      <a
+                        href="https://console.firebase.google.com/project/moneydb-29197/authentication/providers"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sky-700 underline font-semibold inline-flex items-center gap-0.5"
+                      >
+                        Sign-in method <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </li>
                   </ol>
                 </div>
               )}
